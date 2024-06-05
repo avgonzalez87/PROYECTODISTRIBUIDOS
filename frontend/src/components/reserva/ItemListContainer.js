@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSignOutAlt, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 import ItemList from './ItemList';
 import EditItemForm from './EditItemForm';
 import Filter from './Filter';
@@ -34,6 +36,7 @@ const ItemListContainer = () => {
                         estado: reserva.estado,
                         detalle: reserva.detalle,
                         usuario_responsable_correo: reserva.usuario_responsable_correo,
+                        usuario_responsable: reserva.usuario_responsable,
                         numero_mesa: reserva.numero_mesa
                     }));
 
@@ -135,16 +138,18 @@ const ItemListContainer = () => {
             body: JSON.stringify(updatedItem),
         })
         .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
+        .then(reserva => {
+            if (reserva.status === 'success') {
+                console.log("reserva",reserva);
                 const newReserva = {
-                    id: data.data[0],
-                    fecha: data.data[1],
-                    hora: data.data[2],
-                    estado: data.data[3],
-                    detalle: data.data[4],
-                    usuario_responsable_correo: data.data[5],
-                    numero_mesa: data.data[6]
+                    id: reserva.data.id,
+                    fecha: reserva.data.fecha,
+                    hora: reserva.data.hora,
+                    estado: reserva.data.estado,
+                    detalle: reserva.data.detalle,
+                    usuario_responsable_correo: reserva.data.usuario_responsable_correo,
+                    usuario_responsable: reserva.data.usuario_responsable,
+                    numero_mesa: reserva.data.numero_mesa
                 };
                 const updatedItems = method === 'PUT'
                     ? items.map(item => (item.id === updatedItem.id ? newReserva : item)).sort((a, b) => b.id - a.id)
@@ -159,9 +164,9 @@ const ItemListContainer = () => {
                     setMessageType('');
                 }, 3000);  // Ocultar mensaje después de 3 segundos
             } else {
-                setMessage(data.message);  // Mostrar mensaje de error si ocurre un problema
+                setMessage(reserva.message);  // Mostrar mensaje de error si ocurre un problema
                 setMessageType('error');
-                console.error(`Error ${method === 'PUT' ? 'updating' : 'creating'} reservation:`, data.message);
+                console.error(`Error ${method === 'PUT' ? 'updating' : 'creating'} reservation:`, reserva.message);
                 setTimeout(() => {
                     setMessage('');
                     setMessageType('');
@@ -185,15 +190,30 @@ const ItemListContainer = () => {
             const matchHora = filters.hora ? item.hora === filters.hora : true;
             const matchEstado = filters.estado ? item.estado === filters.estado : true;
             const matchDetalle = filters.detalle ? item.detalle.includes(filters.detalle) : true;
-            const matchUsuario = filters.usuario_responsable ? item.usuario_responsable_correo == filters.usuario_responsable : true;
+            const matchUsuario = filters.usuario_responsable ? item.usuario_responsable == filters.usuario_responsable : true;
             const matchMesa = filters.numero_mesa ? item.numero_mesa == filters.numero_mesa : true;
             return matchFecha && matchHora && matchEstado && matchDetalle && matchUsuario && matchMesa;
         });
         setFilteredItems(filtered);
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('role');
+        localStorage.removeItem('user');
+        localStorage.removeItem('correo');
+        navigate('/');
+    };
+
+    const handleNavigateToLogs = () => {
+        navigate('/logs');
+    };
+
     return (
         <div className="item-list-container">
+            <div className="header-icons">
+                <FontAwesomeIcon icon={faClipboardList} className="icon" onClick={handleNavigateToLogs} />
+                <FontAwesomeIcon icon={faSignOutAlt} className="icon" onClick={handleLogout} />
+            </div>
             <h1>Item List</h1>
             {message && (
                 <div className={`message ${messageType === 'error' ? 'error-message' : 'success-message'}`}>

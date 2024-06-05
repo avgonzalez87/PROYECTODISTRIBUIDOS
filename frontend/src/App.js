@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginComponent from './components/login/LoginComponent';
 import RegisterComponent from './components/register/RegisterComponent';
 import ItemListContainer from './components/reserva/ItemListContainer';
+import LogsTable from './components/audit/LogsTable';
 import './App.css';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
                 <Route path="/" element={<LoginComponent />} />
                 <Route path="/items" element={<ItemListContainer />} />
                 <Route path="/register" element={<RegisterComponent />} />
+                <Route path="/logs" element={<LogsTable />} />
                 {/* Añadir rutas para las acciones del menú cuando se implementen */}
             </Routes>
         </Router>

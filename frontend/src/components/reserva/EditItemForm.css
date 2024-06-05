@@ -100,3 +100,15 @@
 .floating-button:hover {
     background-color: #0056b3;
 }
+
+.header-icons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.icon {
+    cursor: pointer;
+    margin-left: 20px;
+    font-size: 24px;
+}

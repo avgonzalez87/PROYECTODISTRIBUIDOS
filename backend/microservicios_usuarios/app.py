@@ -209,6 +209,34 @@ def delete_user(user_id):
     finally:
         cursor.close()
         conn.close()
+        
+@app.route('/logs', methods=['GET', 'OPTIONS'])
+def get_logs():
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response()
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        cursor.execute("""
+            SELECT 
+                l.accion_realizada, 
+                l.fecha_hora, 
+                u.correo AS usuario_responsable_correo, 
+                l.detalle, 
+                l.tabla_afectada 
+            FROM public.auditoria l
+            JOIN public.usuarios u ON l.usuario_responsable = u.id
+        """)
+        logs = cursor.fetchall()
+        response = ResponseFactory.create_response('success', 'Logs obtenidos con éxito', logs)
+        return _corsify_actual_response(response)
+    except psycopg2.DatabaseError as e:
+        response = ResponseFactory.create_response('error', str(e))
+        return _corsify_actual_response(response)
+    finally:
+        cursor.close()
+        conn.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=3200)

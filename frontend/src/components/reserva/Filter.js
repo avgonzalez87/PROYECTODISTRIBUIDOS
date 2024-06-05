@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Filter.css';  // Importar el archivo CSS para el filtro
 
 const Filter = ({ onFilter, users, mesas }) => {
+
     const [filters, setFilters] = useState({
         fecha: '',
         hora: '',
@@ -16,9 +17,9 @@ const Filter = ({ onFilter, users, mesas }) => {
 
     useEffect(() => {
         const userRole = localStorage.getItem('role');
-        const userId = localStorage.getItem('user');
+        const userId = localStorage.getItem('correo');
         if (userRole === 'cliente' && userId) {
-            setFilters(prevFilters => ({ ...prevFilters, usuario_responsable: userId }));
+            setFilters(prevFilters => ({ ...prevFilters, usuario_responsable_correo: userId }));
             setIsClient(true);
         }
     }, []);
