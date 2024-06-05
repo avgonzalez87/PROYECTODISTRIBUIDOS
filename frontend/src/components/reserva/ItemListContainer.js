@@ -18,7 +18,8 @@ const ItemListContainer = () => {
     useEffect(() => {
         const userRole = localStorage.getItem('role');
         const userId = localStorage.getItem('user');
-        if (!userRole) {
+        const correo = localStorage.getItem('correo');
+        if (!userRole || !userId || !correo) {
             navigate('/');
         }
 
@@ -36,8 +37,8 @@ const ItemListContainer = () => {
                         numero_mesa: reserva.numero_mesa
                     }));
 
-                    if (userRole === 'cliente' && userId) {
-                        reservas = reservas.filter(reserva => reserva.usuario_responsable_correo == userId);
+                    if (userRole === 'cliente' && correo) {
+                        reservas = reservas.filter(reserva => reserva.usuario_responsable_correo == correo);
                     }
 
                     const sortedItems = reservas.sort((a, b) => b.id - a.id);

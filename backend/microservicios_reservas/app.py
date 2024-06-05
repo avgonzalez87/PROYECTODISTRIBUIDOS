@@ -96,7 +96,6 @@ def get_reservas():
                 'numero_mesa': r.numero_mesa
             } for r in reservas
         ]
-        print(reservas_list)
         response = ResponseFactory.create_response('success', 'Reservas obtenidas con éxito', reservas_list)
         return _corsify_actual_response(response)
     except Exception as e:

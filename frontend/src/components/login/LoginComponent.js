@@ -12,6 +12,7 @@ const LoginComponent = () => {
     useEffect(() => {
         localStorage.removeItem('role');
         localStorage.removeItem('user');
+        localStorage.removeItem('correo');
     }, []);
 
     const handleLogin = (e) => {
@@ -33,11 +34,14 @@ const LoginComponent = () => {
             if (data.status === 'error') {
                 setError(data.message); // Set the error message
                 console.error('Error:', data.message);
-            } else {
+            } else if(data.data.tipo_usuario && data.data.user && data.data.correo){
                 setError(''); // Clear any previous error messages
                 localStorage.setItem('role', data.data.tipo_usuario); // Almacena el rol del usuario
                 localStorage.setItem('user', data.data.user); // Almacena el rol del usuario
+                localStorage.setItem('correo', data.data.correo); // Almacena el rol del usuario
                 navigate('/items');
+            }else{
+                setError('An error occurred while logging in. Please try again.');
             }
         })
         .catch((error) => {

@@ -32,7 +32,6 @@ const RegisterComponent = () => {
             if (data.status === 'error') {
                 console.error('Error:', data.message);
             } else {
-                console.log('Success:', data.message);
                 navigate('/items');
             }
         })
