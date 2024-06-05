@@ -212,7 +212,7 @@ const ItemListContainer = () => {
     return (
         <div className="item-list-container">
             <div className="header-icons">
-                {userRole === 'super_usuario' && (
+                {userRole === 'super_administrador' && (
                     <FontAwesomeIcon icon={faClipboardList} className="icon" onClick={handleNavigateToLogs} />
                 )}
                 <FontAwesomeIcon icon={faSignOutAlt} className="icon" onClick={handleLogout} />
