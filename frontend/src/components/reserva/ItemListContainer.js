@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ItemList from './ItemList';
 import EditItemForm from './EditItemForm';
 import Filter from './Filter';
@@ -12,21 +13,33 @@ const ItemListContainer = () => {
     const [messageType, setMessageType] = useState('');  // Estado para manejar el tipo de mensaje
     const [users, setUsers] = useState([]);  // Estado para manejar la lista de usuarios
     const [mesas, setMesas] = useState([]);  // Estado para manejar la lista de mesas
+    const navigate = useNavigate();
 
     useEffect(() => {
+        const userRole = localStorage.getItem('role');
+        const userId = localStorage.getItem('user');
+        if (!userRole) {
+            navigate('/');
+        }
+
         fetch('http://localhost:3100/reservas')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    const reservas = data.data.map(reserva => ({
-                        id: reserva[0],
-                        fecha: reserva[1],
-                        hora: reserva[2],
-                        estado: reserva[3],
-                        detalle: reserva[4],
-                        usuario_responsable: reserva[5],
-                        numero_mesa: reserva[6]
+                    let reservas = data.data.map(reserva => ({
+                        id: reserva.id,
+                        fecha: reserva.fecha,
+                        hora: reserva.hora,
+                        estado: reserva.estado,
+                        detalle: reserva.detalle,
+                        usuario_responsable_correo: reserva.usuario_responsable_correo,
+                        numero_mesa: reserva.numero_mesa
                     }));
+
+                    if (userRole === 'cliente' && userId) {
+                        reservas = reservas.filter(reserva => reserva.usuario_responsable_correo == userId);
+                    }
+
                     const sortedItems = reservas.sort((a, b) => b.id - a.id);
                     setItems(sortedItems);
                     setFilteredItems(sortedItems);  // Inicialmente mostrar todos los items
@@ -35,7 +48,7 @@ const ItemListContainer = () => {
                 }
             })
             .catch(error => console.error('Error:', error));
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         fetch('http://localhost:3200/users')
@@ -129,7 +142,7 @@ const ItemListContainer = () => {
                     hora: data.data[2],
                     estado: data.data[3],
                     detalle: data.data[4],
-                    usuario_responsable: data.data[5],
+                    usuario_responsable_correo: data.data[5],
                     numero_mesa: data.data[6]
                 };
                 const updatedItems = method === 'PUT'
@@ -171,7 +184,7 @@ const ItemListContainer = () => {
             const matchHora = filters.hora ? item.hora === filters.hora : true;
             const matchEstado = filters.estado ? item.estado === filters.estado : true;
             const matchDetalle = filters.detalle ? item.detalle.includes(filters.detalle) : true;
-            const matchUsuario = filters.usuario_responsable ? item.usuario_responsable == filters.usuario_responsable : true;
+            const matchUsuario = filters.usuario_responsable ? item.usuario_responsable_correo == filters.usuario_responsable : true;
             const matchMesa = filters.numero_mesa ? item.numero_mesa == filters.numero_mesa : true;
             return matchFecha && matchHora && matchEstado && matchDetalle && matchUsuario && matchMesa;
         });

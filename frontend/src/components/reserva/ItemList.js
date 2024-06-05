@@ -23,7 +23,7 @@ const ItemList = ({ items, onEdit, onDelete }) => {
                     <span className="item-hora">{item.hora}</span>
                     <span className="item-estado">{item.estado}</span>
                     <span className="item-detalle">{item.detalle}</span>
-                    <span className="item-usuario">{item.usuario_responsable}</span>
+                    <span className="item-usuario">{item.usuario_responsable_correo}</span>
                     <span className="item-mesa">{item.numero_mesa}</span>
                     <div className="item-acciones">
                         <button onClick={() => onEdit(item)} className="edit-button">

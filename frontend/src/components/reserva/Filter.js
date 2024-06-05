@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Filter.css';  // Importar el archivo CSS para el filtro
 
 const Filter = ({ onFilter, users, mesas }) => {
@@ -11,7 +11,17 @@ const Filter = ({ onFilter, users, mesas }) => {
         numero_mesa: ''
     });
 
+    const [isClient, setIsClient] = useState(false);
     const estadoOptions = ['confirmado', 'cancelado', 'disponible'];
+
+    useEffect(() => {
+        const userRole = localStorage.getItem('role');
+        const userId = localStorage.getItem('user');
+        if (userRole === 'cliente' && userId) {
+            setFilters(prevFilters => ({ ...prevFilters, usuario_responsable: userId }));
+            setIsClient(true);
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -45,15 +55,17 @@ const Filter = ({ onFilter, users, mesas }) => {
                 <label>Detalle:</label>
                 <input type="text" name="detalle" value={filters.detalle} onChange={handleChange} />
             </div>
-            <div className="filter-row">
-                <label>Usuario Responsable:</label>
-                <select name="usuario_responsable" value={filters.usuario_responsable} onChange={handleChange}>
-                    <option value="">Todos</option>
-                    {users.map((usuario) => (
-                        <option key={usuario[0]} value={usuario[0]}>{`${usuario[1]} ${usuario[2]}`}</option>
-                    ))}
-                </select>
-            </div>
+            {!isClient && (
+                <div className="filter-row">
+                    <label>Usuario Responsable:</label>
+                    <select name="usuario_responsable" value={filters.usuario_responsable} onChange={handleChange}>
+                        <option value="">Todos</option>
+                        {users.map((usuario) => (
+                            <option key={usuario[0]} value={usuario[0]}>{`${usuario[1]} ${usuario[2]}`}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
             <div className="filter-row">
                 <label>Mesa:</label>
                 <select name="numero_mesa" value={filters.numero_mesa} onChange={handleChange}>

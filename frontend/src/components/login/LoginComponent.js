@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginComponent.css';
 
@@ -7,6 +7,12 @@ const LoginComponent = () => {
     const [contrasena, setContrasena] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    // Limpia el almacenamiento local al montar el componente
+    useEffect(() => {
+        localStorage.removeItem('role');
+        localStorage.removeItem('user');
+    }, []);
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -17,14 +23,20 @@ const LoginComponent = () => {
             },
             body: JSON.stringify({ correo, contrasena }),
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.status === 'error') {
                 setError(data.message); // Set the error message
                 console.error('Error:', data.message);
             } else {
                 setError(''); // Clear any previous error messages
-                console.log('Success:', data);
+                localStorage.setItem('role', data.data.tipo_usuario); // Almacena el rol del usuario
+                localStorage.setItem('user', data.data.user); // Almacena el rol del usuario
                 navigate('/items');
             }
         })

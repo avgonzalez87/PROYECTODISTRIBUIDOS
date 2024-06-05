@@ -4,16 +4,27 @@ import './EditItemForm.css';  // Importar el archivo CSS para el formulario de e
 const EditItemForm = ({ item, onSave, onCancel, users, mesas }) => {
     const [formData, setFormData] = useState({ ...item });
     const [errors, setErrors] = useState({});
+    const [isClient, setIsClient] = useState(false);
     const estadoOptions = ['confirmado', 'cancelado', 'disponible'];
     const [timeOptions, setTimeOptions] = useState([]);
 
     useEffect(() => {
-        // Set default values if not set
-        if (users.length > 0 && !formData.usuario_responsable) {
+        const userRole = localStorage.getItem('role');
+        const userId = localStorage.getItem('user');
+        if (userRole === 'cliente' && userId) {
             setFormData(prevFormData => ({
                 ...prevFormData,
-                usuario_responsable: users[0][0]  // Default to first user
+                usuario_responsable: userId
             }));
+            setIsClient(true);
+        } else {
+            // Set default values if not set
+            if (users.length > 0 && !formData.usuario_responsable) {
+                setFormData(prevFormData => ({
+                    ...prevFormData,
+                    usuario_responsable: users[0][0]  // Default to first user
+                }));
+            }
         }
         if (mesas.length > 0 && !formData.numero_mesa) {
             setFormData(prevFormData => ({
@@ -133,19 +144,21 @@ const EditItemForm = ({ item, onSave, onCancel, users, mesas }) => {
                 />
                 {errors.detalle && <span className="error-message">{errors.detalle}</span>}
             </div>
-            <div className="form-group">
-                <label>Usuario Responsable:</label>
-                <select 
-                    name="usuario_responsable" 
-                    value={formData.usuario_responsable || (users.length > 0 ? users[0][0] : '')} 
-                    onChange={handleChange}
-                >
-                    {users.map((usuario) => (
-                        <option key={usuario[0]} value={usuario[0]}>{`${usuario[1]} ${usuario[2]}`}</option>
-                    ))}
-                </select>
-                {errors.usuario_responsable && <span className="error-message">{errors.usuario_responsable}</span>}
-            </div>
+            {!isClient && (
+                <div className="form-group">
+                    <label>Usuario Responsable:</label>
+                    <select 
+                        name="usuario_responsable" 
+                        value={formData.usuario_responsable || (users.length > 0 ? users[0][0] : '')} 
+                        onChange={handleChange}
+                    >
+                        {users.map((usuario) => (
+                            <option key={usuario[0]} value={usuario[0]}>{`${usuario[1]} ${usuario[2]}`}</option>
+                        ))}
+                    </select>
+                    {errors.usuario_responsable && <span className="error-message">{errors.usuario_responsable}</span>}
+                </div>
+            )}
             <div className="form-group">
                 <label>Mesa:</label>
                 <select 

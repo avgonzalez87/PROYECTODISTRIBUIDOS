@@ -109,8 +109,8 @@ def login():
         )
         user = cursor.fetchone()
         if user:
-            additional_claims = {"tipo_usuario": user['tipo_usuario']}
-            response = ResponseFactory.create_response('success', 'Login exitoso', {'user': user['correo'], 'tipo_usuario': additional_claims})
+            additional_claims = user['tipo_usuario']
+            response = ResponseFactory.create_response('success', 'Login exitoso', {'user': user['id'], 'tipo_usuario': additional_claims})
             return _corsify_actual_response(response)
         else:
             response = ResponseFactory.create_response('error', 'Credenciales inválidas')
