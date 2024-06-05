@@ -16,6 +16,7 @@ const ItemListContainer = () => {
     const [users, setUsers] = useState([]);  // Estado para manejar la lista de usuarios
     const [mesas, setMesas] = useState([]);  // Estado para manejar la lista de mesas
     const navigate = useNavigate();
+    const userRole = localStorage.getItem('role'); // Obtener el rol del usuario del local storage
 
     useEffect(() => {
         const userRole = localStorage.getItem('role');
@@ -211,7 +212,9 @@ const ItemListContainer = () => {
     return (
         <div className="item-list-container">
             <div className="header-icons">
-                <FontAwesomeIcon icon={faClipboardList} className="icon" onClick={handleNavigateToLogs} />
+                {userRole === 'super_usuario' && (
+                    <FontAwesomeIcon icon={faClipboardList} className="icon" onClick={handleNavigateToLogs} />
+                )}
                 <FontAwesomeIcon icon={faSignOutAlt} className="icon" onClick={handleLogout} />
             </div>
             <h1>Item List</h1>
